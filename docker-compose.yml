@@ -1,0 +1,100 @@
+version: '3.8'
+
+services:
+  # Node One
+  nats-node-one:
+    image: nats:latest
+    container_name: nats-node-one
+    command: [
+      "-c", "/etc/nats/nats.conf"
+    ]
+    volumes:
+      - ./config/nats-node-one.conf:/etc/nats/nats.conf:ro
+      - nats-data-one:/data/nats/node-one
+    ports:
+      - "4221:4222"   # Client port
+      - "6221:6222"   # Cluster port
+      - "8221:8222"   # HTTP monitoring
+      - "9221:9222"   # WebSocket port
+    hostname: nats-node-one
+    networks:
+      nats-cluster:
+        aliases:
+          - nats-node-one
+          - node-one
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8222/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Node Two
+  nats-node-two:
+    image: nats:latest
+    container_name: nats-node-two
+    command: [
+      "-c", "/etc/nats/nats.conf"
+    ]
+    volumes:
+      - ./config/nats-node-two.conf:/etc/nats/nats.conf:ro
+      - nats-data-two:/data/nats/node-two
+    ports:
+      - "4222:4222"   # Client port
+      - "6222:6222"   # Cluster port
+      - "8222:8222"   # HTTP monitoring
+      - "9222:9222"   # WebSocket port
+    hostname: nats-node-two
+    networks:
+      nats-cluster:
+        aliases:
+          - nats-node-two
+          - node-two
+    restart: unless-stopped
+    depends_on:
+      - nats-node-one
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8222/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Node Three
+  nats-node-three:
+    image: nats:latest
+    container_name: nats-node-three
+    command: [
+      "-c", "/etc/nats/nats.conf"
+    ]
+    volumes:
+      - ./config/nats-node-three.conf:/etc/nats/nats.conf:ro
+      - nats-data-three:/data/nats/node-three
+    ports:
+      - "4223:4222"   # Client port
+      - "6223:6222"   # Cluster port
+      - "8223:8222"   # HTTP monitoring
+      - "9223:9222"   # WebSocket port
+    hostname: nats-node-three
+    networks:
+      nats-cluster:
+        aliases:
+          - nats-node-three
+          - node-three
+    restart: unless-stopped
+    depends_on:
+      - nats-node-one
+      - nats-node-two
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8222/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  nats-cluster:
+    driver: bridge
+
+volumes:
+  nats-data-one:
+  nats-data-two:
+  nats-data-three:
