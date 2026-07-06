@@ -28,8 +28,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    extra_hosts:
-      - "host.docker.internal:172.17.0.1"
 
   # Node Two
   nats-node-two:
@@ -60,8 +58,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    extra_hosts:
-      - "host.docker.internal:172.17.0.1"
 
   # Node Three
   nats-node-three:
@@ -93,13 +89,11 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    extra_hosts:
-      - "host.docker.internal:172.17.0.1"
 
 networks:
   nats-cluster:
     driver: bridge
-    name: nats-cluster
+
 volumes:
   nats-data-one:
   nats-data-two:
