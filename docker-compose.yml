@@ -93,7 +93,7 @@ services:
 networks:
   nats-cluster:
     driver: bridge
-
+    name: nats-cluster
 volumes:
   nats-data-one:
   nats-data-two:
